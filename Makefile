@@ -3,7 +3,7 @@ CC = g++
 CXXFLAGS = -std=c++20 -Wall -Werror -Wextra
 
 # Makefile settings - Can be customized.
-APPNAME = DataStructures
+APPNAME = cpp_utilities.exe
 EXT = .cpp
 SRCDIR = src
 OBJDIR = obj

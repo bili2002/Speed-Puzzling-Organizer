@@ -1,50 +1,60 @@
-#include <iostream>
 #include <exception>
 #include <string>
 #include <vector>
 
 class ImageAnalyzer {
+public:
     struct Pixel {
-        char r;
-        char g;
-        char b;
+        int r;
+        int g;
+        int b;
+
+        Pixel& operator/=(int by);
+        // friend std::ostream& operator<<(std::ostream stream, const Pixel& pixel);
+        // friend std::istream& operator>>(std::istream& stream, ImageAnalyzer::Pixel& pixel);
     };
 
     struct Coordinates {
         int x;
         int y;
     };
+    
 
     using Pixels = std::vector<std::vector<Pixel>>;
     using Zones = std::vector<std::vector<int>>;
     using PieceDifficulty = std::vector<std::vector<double>>;
 
 private:
-    PieceDifficulty pieceDifficulty;
+    static const int MaxColorValue = 256;
+    static const int MainColors = 3;
+
     Pixels pixels;
+    int pieces;
     int height;
     int width;
 
-    Coordinates fromPixelToPiece(const Coordinates& pixelCoordinates);
-    void findSize();    
+    float ratio;
 
-    Pixels flattenColors(int by);
-    Zones getZones();
-    PieceDifficulty countZones();
+    void findRatioForPieces();    
+    Coordinates fromPixelToPiece(const Coordinates& pixelCoordinates) const;
 
-    Pixels getGrey();
-    PieceDifficulty countDistingushableElements();
-    PieceDifficulty findPatterns();
+    Pixels flattenColors(int numberOfTotalColors) const;
+    Zones getZones() const;
+    PieceDifficulty countZones() const;
 
-    PieceDifficulty findGradientInZone(const Zones& zone);
+    Pixels getGrey() const;
+    PieceDifficulty countDistingushableElements() const;
+    PieceDifficulty findPatterns() const;
 
-    PieceDifficulty getTotalDifficulty();
+    PieceDifficulty findGradientInZone(const Zones& zone) const;
 
-    void writeToFile(const Pixels& pixels); // for debbuging 
+    PieceDifficulty getTotalDifficulty() const;
+
+    void writeToFile(const Pixels& pixels, std::string fileName) const; // for debbuging 
 
 public:
     ImageAnalyzer() = delete;
-    ImageAnalyzer(const std::string& image_file, int pieces);
+    ImageAnalyzer(const std::string& imageFile, int pieces);
 
-    double getDifficulty();
+    double getDifficulty() const;
 };
