@@ -12,12 +12,12 @@ def create_metadata(image_file_name: str):
     def get_meta_file(image_file_name: str):
         metadata_path = config_reader.get_image_metadata_path()
         image_name = os.path.splitext(image_file_name)[0]
-        return open(f"{metadata_path}/{image_name}.txt", "w")
+        return open(f"{metadata_path}/{image_name}.ppm", "w")
 
 
     def write_size(meta_file, image_file: Image):
         h, w = image_file.size
-        meta_file.write(f"{h} {w}\n")
+        meta_file.write(f"P3 {h} {w} 255\n")
         
 
     def write_pixels(meta_file, image_file: Image):
@@ -34,3 +34,4 @@ def create_metadata(image_file_name: str):
 
     write_size(meta_file, image_file)
     write_pixels(meta_file, image_file)
+    meta_file.write('\n')

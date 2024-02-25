@@ -39,7 +39,9 @@ private:
     PieceDifficulty findGradientInZone(const Zones& zone);
 
     PieceDifficulty getTotalDifficulty();
-    
+
+    void writeToFile(const Pixels& pixels); // for debbuging 
+
 public:
     ImageAnalyzer() = delete;
     ImageAnalyzer(const std::string& image_file, int pieces);
