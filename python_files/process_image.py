@@ -1,4 +1,4 @@
-import python_files.config_reader as config_reader
+import config_reader as config_reader
 from PIL import Image
 import os
 

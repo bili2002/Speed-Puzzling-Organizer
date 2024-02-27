@@ -3,7 +3,7 @@ CC = g++
 CXXFLAGS = -std=c++20 -Wall -Werror -Wextra
 
 # Makefile settings - Can be customized.
-APPNAME = cpp_utilities.exe
+APPNAME = analyze
 EXT = .cpp
 SRCDIR = src
 OBJDIR = obj

@@ -9,14 +9,23 @@ public:
         int g;
         int b;
 
-        Pixel& operator/=(int by);
+        Pixel& operator/=(int divBy);
+        Pixel& operator+=(const Pixel& other);
+        
+        bool operator==(const Pixel& other) const;
         // friend std::ostream& operator<<(std::ostream stream, const Pixel& pixel);
         // friend std::istream& operator>>(std::istream& stream, ImageAnalyzer::Pixel& pixel);
+
+        int distance(const Pixel& other) const;
     };
 
     struct Coordinates {
         int x;
         int y;
+
+        Coordinates operator+(const Coordinates& other) const;
+
+        bool inBound(int height, int width) const;
     };
     
 
@@ -25,28 +34,47 @@ public:
     using PieceDifficulty = std::vector<std::vector<double>>;
 
 private:
-    static const int MaxColorValue = 256;
-    static const int MainColors = 3;
+    static const int MAX_COLOR_VALUE = 255;
+    static const int MAIN_COLORS = 3;
 
-    Pixels pixels;
-    int pieces;
-    int height;
-    int width;
+    static const int ZONES_MAX_COLOR_VALUE = 10;
+    static const int DIFFICULTY_COEFFICIENT = 3;
 
-    float ratio;
+    static const std::vector<Coordinates> directions;
+
+    static double difficultyToTime(double difficulty);
+
+    Pixels imagePixels;
+    int puzzlePieces;
+    int imageHeight;
+    int imageWidth;
+
+    float ratioPixelsToPiece;
+
+    template<typename T>
+    inline void setVectorDimensions(std::vector<std::vector<T>>& vec, int height, int width) const;
+
+    template<typename T>
+    static inline int width(const std::vector<std::vector<T>>& vec);
+
+    template<typename T>
+    static inline int height(const std::vector<std::vector<T>>& vec);
 
     void findRatioForPieces();    
     Coordinates fromPixelToPiece(const Coordinates& pixelCoordinates) const;
 
-    Pixels flattenColors(int numberOfTotalColors) const;
-    Zones getZones() const;
-    PieceDifficulty countZones() const;
+    Pixels flattenColors(const Pixels& pixels, int maxColorValue) const;
+    void findCurrentZone(Coordinates curr, Zones& zones, const Pixels& pixels, int zoneNumber) const;
+    std::tuple<Zones, int> getZones(const Pixels& pixels) const;
+    // PieceDifficulty countZones() const;
+
+    Pixels getPiecesAverageColor() const;
 
     Pixels getGrey() const;
     PieceDifficulty countDistingushableElements() const;
     PieceDifficulty findPatterns() const;
 
-    PieceDifficulty findGradientInZone(const Zones& zone) const;
+    PieceDifficulty findGradientInZones() const;
 
     PieceDifficulty getTotalDifficulty() const;
 
