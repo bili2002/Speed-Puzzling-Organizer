@@ -3,4 +3,4 @@ A tool you can use to store / view / analyze your jigsaw puzzling times. Also, y
 
 
 TO DO:
--Script to download the image of a puzzle by name
+- Script to download the image of a puzzle by name

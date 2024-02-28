@@ -1,7 +1,6 @@
-import config_reader as config_reader
 from PIL import Image
+import config_reader 
 import os
-
 
 def create_metadata(image_file_name: str):
     def get_image_file(image_file_name: str) -> Image:
