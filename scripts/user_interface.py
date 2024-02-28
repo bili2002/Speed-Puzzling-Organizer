@@ -83,7 +83,7 @@ def addEntry(argv_begin):
     else:
         df_new = createNewDF(new_data)
 
-    df_base = pl.concat([df_base, df_new])
+    df_base = df_base.vstack(df_new)
     writeDF(df_base, PUZZLE_DATA)
 
 
@@ -159,7 +159,7 @@ def plotMeanTimeByTag(df):
     tags = np.array(df[ENTRY.tags.value])
     times = np.array(df[ENTRY.time.value])
 
-    plt.bar(tags, times)
+    plt.bar(tags, times, color = 'tomato')
     plt.show()
 
 
@@ -183,7 +183,7 @@ def plotTimesByDate(df):
     plt.show()
 
 
-def find_image(name):
+def findImage(name):
     files = os.listdir(IMAGE_PATH)
     
     for file in files:
@@ -194,23 +194,30 @@ def find_image(name):
 
 
 def evaluate(name):
-    file = find_image(name)
+    print(name)
+
+    file = findImage(name)
     if (file == None):
         return None
     
-    print(name)
     process_image.create_metadata(file) 
 
     image_name = os.path.splitext(name)[0]
     metadata_file = f"{METADATA_PATH}/{image_name}.ppm"
 
-    output = subprocess.check_output([f"./{ANALYZOR} {metadata_file} 500"], shell=True).decode()
+    output = subprocess.check_output(
+        [f"./{ANALYZOR} {metadata_file} 500"], 
+        shell=True
+    ).decode()
+
     return float(output) * DIFF_RESCALE
 
 
 def evaluateAll(shouldPlot):
     df = readDF(PUZZLE_DATA)
-    df = df.with_columns(pl.col("name").apply(lambda x: evaluate(x)).alias("difficulty")).sort(ENTRY.time.value)
+    df = df.with_columns(
+        pl.col("name").apply(lambda x: evaluate(x)).alias("difficulty")
+    ).sort(ENTRY.time.value)
 
     times = np.array(df[ENTRY.time.value])
     difficulties = np.array(df["difficulty"])
@@ -249,6 +256,8 @@ def plotBy(argv_begin):
         plotCountByTag(df)
     elif (type_of_plot == "timesByDate"):
         plotTimesByDate(df)
+    else:
+        raise "No implementation for this plot type yet."
 
 
 def makeProject():

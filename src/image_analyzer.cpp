@@ -167,17 +167,6 @@ Pixels ImageAnalyzer::getPiecesAverageColor() const {
     return piecesColor;
 }  
 
-
-// ImageAnalyzer::PieceDifficulty ImageAnalyzer::ImageAnalyzer::countZones() {
-
-// }
-
-// }
-
-// Pixels ImageAnalyzer::getGrey();
-// ImageAnalyzer::PieceDifficulty ImageAnalyzer::countDistingushableElements();
-// ImageAnalyzer::PieceDifficulty ImageAnalyzer::findPatterns();
-
 PieceDifficulty ImageAnalyzer::findGradientInZones() const {
     auto piecesColor = getPiecesAverageColor();
     auto zones = getZones(piecesColor);
@@ -215,16 +204,12 @@ PieceDifficulty ImageAnalyzer::findGradientInZones() const {
 
 PieceDifficulty ImageAnalyzer::getTotalDifficulty() const {
     PieceDifficulty pieceDifficulty = findGradientInZones();
-
     return pieceDifficulty;
 }
 
 void ImageAnalyzer::writeToFile(const Pixels& pixels, std::string fileName) const {
     std::ofstream file(fileName);
-
-    Pixel tt({1, 2, 3});
-    file << tt;
-
+    
     if (!file.is_open()) {
         throw std::runtime_error("Couldn't open file");
     }

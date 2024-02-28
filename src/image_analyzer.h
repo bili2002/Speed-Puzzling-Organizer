@@ -11,10 +11,7 @@ public:
 
         Pixel& operator/=(int divBy);
         Pixel& operator+=(const Pixel& other);
-        
         bool operator==(const Pixel& other) const;
-        // friend std::ostream& operator<<(std::ostream stream, const Pixel& pixel);
-        // friend std::istream& operator>>(std::istream& stream, ImageAnalyzer::Pixel& pixel);
 
         int distance(const Pixel& other) const;
     };
@@ -24,7 +21,6 @@ public:
         int y;
 
         Coordinates operator+(const Coordinates& other) const;
-
         bool inBound(int height, int width) const;
     };
     
@@ -66,19 +62,19 @@ private:
     Pixels flattenColors(const Pixels& pixels, int maxColorValue) const;
     void findCurrentZone(Coordinates curr, Zones& zones, const Pixels& pixels, int zoneNumber) const;
     std::tuple<Zones, int> getZones(const Pixels& pixels) const;
-    // PieceDifficulty countZones() const;
 
     Pixels getPiecesAverageColor() const;
-
-    Pixels getGrey() const;
-    PieceDifficulty countDistingushableElements() const;
-    PieceDifficulty findPatterns() const;
 
     PieceDifficulty findGradientInZones() const;
 
     PieceDifficulty getTotalDifficulty() const;
 
     void writeToFile(const Pixels& pixels, std::string fileName) const; // for debbuging 
+
+    // TO IMPLEMENT
+    // Pixels getGrey() const;
+    // PieceDifficulty countDistingushableElements() const;
+    // PieceDifficulty findPatterns() const;
 
 public:
     ImageAnalyzer() = delete;
