@@ -5,11 +5,20 @@ from enum import Enum
 import config_reader
 import polars as pl
 import numpy as np
+import subprocess
 import shutil
 import sys
+import os
 
+import process_image
+
+METADATA_PATH = config_reader.get_image_metadata_path()
+IMAGE_PATH = config_reader.get_image_raw_path()
 PUZZLE_DATA = config_reader.get_puzzle_data()
 BACKUPS = config_reader.get_database_backups_path()
+ANALYZOR = config_reader.get_analyzor()
+
+MAX_DIFF = 100
 
 class ENTRY(Enum):
     name = "name"
@@ -161,6 +170,58 @@ def plotTimesByDate():
     plt.show()
 
 
+def find_image(name):
+    files = os.listdir(IMAGE_PATH)
+    
+    for file in files:
+        if name in file:
+            return f"{file}"
+        
+    return None
+
+
+def evaluate(name):
+    file = find_image(name)
+    if (file == None):
+        return None
+    
+    print(name)
+    process_image.create_metadata(file) 
+
+    image_name = os.path.splitext(name)[0]
+    metadata_file = f"{METADATA_PATH}/{image_name}.ppm"
+
+    output = subprocess.check_output([f"./{ANALYZOR} {metadata_file} 500"], shell=True).decode()
+    return float(output)
+
+
+def evaluateAll():
+    df = readDF(PUZZLE_DATA)
+    df = df.with_columns(pl.col("name").apply(lambda x: evaluate(x)).alias("difficulty")).sort(ENTRY.time.value)
+
+    times = np.array(df[ENTRY.time.value])
+    difficulties = np.array(df["difficulty"])
+    
+    max_diff = np.max(difficulties)
+    difficulties = difficulties * MAX_DIFF / max_diff
+
+    a, b = np.polyfit(times, difficulties, 1)
+
+    plt.scatter(times, difficulties, color='blue')
+    plt.plot(times, a * times + b, color='steelblue')
+
+    plt.show()
+
+    s = sum([(a * time + b - difficulty) ** 2 for time, difficulty in zip(times, difficulties)])
+
+    print (s)
+    return s
+
+
 def makeProject():
     df_new = createNewDF([[]] * len(ENTRY))
     writeDF(df_new, PUZZLE_DATA)
+
+
+def test():
+    evaluateAll()

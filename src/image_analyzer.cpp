@@ -121,16 +121,10 @@ void ImageAnalyzer::findCurrentZone(Coordinates curr, Zones& zones, const Pixels
 }
 
 std::tuple<Zones, int> ImageAnalyzer::getZones(const Pixels& pixels) const {
-    std::cerr << "Flattening array" << std::endl;
-
     auto flattenedPixels = flattenColors(pixels, ZONES_MAX_COLOR_VALUE);
     Zones zones;
 
-    std::cerr << "Flattened array" << std::endl;
-
     setVectorDimensions(zones, height(pixels), width(pixels));
-
-    std::cerr << "Finding Zones" << std::endl;
 
     int nextZone = 1;
     for (int i = 0; i < height(pixels); i++) {
@@ -142,14 +136,10 @@ std::tuple<Zones, int> ImageAnalyzer::getZones(const Pixels& pixels) const {
         }
     }
 
-    std::cerr << "Found Zones" << std::endl;
-
     return {zones, nextZone - 1};
 }
 
 Pixels ImageAnalyzer::getPiecesAverageColor() const {
-    std::cerr << "Finding average color for piece" << std::endl;
-
     Pixels piecesColor;
     std::vector<std::vector<int>> pixelsInPiece;
 
@@ -173,8 +163,6 @@ Pixels ImageAnalyzer::getPiecesAverageColor() const {
             piecesColor[i][j] /= pixelsInPiece[i][j];
         }
     }
-
-    std::cerr << "Found average color" << std::endl;
 
     return piecesColor;
 }  
@@ -218,7 +206,6 @@ PieceDifficulty ImageAnalyzer::findGradientInZones() const {
 
             double averageDistance = countDistance > 0 ? totalDistance / countDistance : 1;
 
-            std::cout<<i<<' '<<j<<' '<<averageDistance<<' '<< 1 - averageDistance / maxDistance<<std::endl;
             pieceDifficulty[i][j] = 1 - averageDistance / maxDistance;
         }
     }
@@ -273,10 +260,8 @@ double ImageAnalyzer::getDifficulty() const {
     double totalSum = 0;
     for (auto& row : pieceDifficulty) {
         for (auto& cell : row) {
-            std::cout << std::fixed << std::setprecision(2) << cell << ' ';
             totalSum += difficultyToTime(cell);
         }
-        std::cout << std::endl;
     }
 
     std::cout << totalSum << std::endl;

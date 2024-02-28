@@ -37,8 +37,8 @@ private:
     static const int MAX_COLOR_VALUE = 255;
     static const int MAIN_COLORS = 3;
 
-    static const int ZONES_MAX_COLOR_VALUE = 10;
-    static const int DIFFICULTY_COEFFICIENT = 3;
+    static const int ZONES_MAX_COLOR_VALUE = 3;
+    static const int DIFFICULTY_COEFFICIENT = 2;
 
     static const std::vector<Coordinates> directions;
 

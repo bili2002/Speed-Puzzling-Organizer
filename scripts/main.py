@@ -22,5 +22,10 @@ if __name__ == "__main__":
         ui.plotCountByTag()
     elif (sys.argv[1] == "plotTimesByDate"):
         ui.plotTimesByDate()
+    elif (sys.argv[1] == "evaluateAll"):
+        ui.evaluateAll()
+    elif (sys.argv[1] == "test"):
+        ui.test()
     else: 
         raise "No command like that"
+    
