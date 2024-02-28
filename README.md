@@ -25,7 +25,7 @@ In this command:
 `date` is the date of completion of the puzzle. This parameter is optional. If left empty, it will default to the current date.
 
 
-## To delete entry:
+## Deleting an Entry:
 ```console
 python .\scripts\main.py delete row
 ```
