@@ -16,14 +16,12 @@ if __name__ == "__main__":
         ui.showFastest()
     elif (sys.argv[1] == "showSlowest"):
         ui.showSlowest()
-    elif (sys.argv[1] == "plotMeanByTag"):
-        ui.plotMeanTimeByTag()
-    elif (sys.argv[1] == "plotCountByTag"):
-        ui.plotCountByTag()
-    elif (sys.argv[1] == "plotTimesByDate"):
-        ui.plotTimesByDate()
+    elif (sys.argv[1] == "plot"):
+        ui.plotBy(2)
     elif (sys.argv[1] == "evaluateAll"):
-        ui.evaluateAll()
+        ui.evaluateAll(True)
+    elif (sys.argv[1] == "evaluateNew"):
+        ui.evaluateNew(2)
     elif (sys.argv[1] == "test"):
         ui.test()
     else: 

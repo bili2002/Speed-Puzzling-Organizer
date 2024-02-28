@@ -202,5 +202,4 @@ cython_debug/
 *.ppm
 *.jpeg
 *.jpg
-*.txt
 *.webp

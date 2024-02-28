@@ -18,7 +18,7 @@ PUZZLE_DATA = config_reader.get_puzzle_data()
 BACKUPS = config_reader.get_database_backups_path()
 ANALYZOR = config_reader.get_analyzor()
 
-MAX_DIFF = 100
+DIFF_RESCALE = 0.1
 
 class ENTRY(Enum):
     name = "name"
@@ -112,14 +112,30 @@ def showSlowest():
     print(df.sort(ENTRY.time.value, descending = True).head(10))
 
 
-def getValuesByTags(argv_begin):
+def filterByByTags(argv_begin):
     def intersection(lst1, lst2):
         return list(set(lst1) & set(lst2))
     
+    df = readDF(PUZZLE_DATA)
+
+    if argv_begin == len(sys.argv):
+        return df
+    
     tags = sys.argv[argv_begin : len(sys.argv)]
 
-    df = readDF(PUZZLE_DATA)
-    df = df.filter(intersection(pl.col(ENTRY.tags.value), tags))
+    try:
+        excluding_idx = tags.index("exclude")
+    except:
+        excluding_idx = len(tags)
+    
+    tags_include = tags[: excluding_idx]
+    tags_exclude = tags[excluding_idx + 1:]
+
+    df = df.filter(pl.col(ENTRY.tags.value).apply(
+        lambda x: 
+            len(intersection(x, tags_include)) > 0 and 
+            len(intersection(x, tags_exclude)) == 0
+        ))
     
     return df
 
@@ -137,8 +153,7 @@ def getAverageTime(df):
     return df.mean(ENTRY.time.value)
 
 
-def plotMeanTimeByTag():
-    df = readDF(PUZZLE_DATA)
+def plotMeanTimeByTag(df):
     df = groupByTag(df).mean().drop_nulls()
 
     tags = np.array(df[ENTRY.tags.value])
@@ -148,8 +163,7 @@ def plotMeanTimeByTag():
     plt.show()
 
 
-def plotCountByTag():
-    df = readDF(PUZZLE_DATA)
+def plotCountByTag(df):
     df = groupByTag(df).count().drop_nulls()
 
     tags = np.array(df[ENTRY.tags.value])
@@ -159,8 +173,7 @@ def plotCountByTag():
     plt.show()
     
 
-def plotTimesByDate():
-    df = readDF(PUZZLE_DATA)
+def plotTimesByDate(df):
     df = df.sort(DATE)
 
     times = np.array(df[ENTRY.time.value])
@@ -192,30 +205,50 @@ def evaluate(name):
     metadata_file = f"{METADATA_PATH}/{image_name}.ppm"
 
     output = subprocess.check_output([f"./{ANALYZOR} {metadata_file} 500"], shell=True).decode()
-    return float(output)
+    return float(output) * DIFF_RESCALE
 
 
-def evaluateAll():
+def evaluateAll(shouldPlot):
     df = readDF(PUZZLE_DATA)
     df = df.with_columns(pl.col("name").apply(lambda x: evaluate(x)).alias("difficulty")).sort(ENTRY.time.value)
 
     times = np.array(df[ENTRY.time.value])
     difficulties = np.array(df["difficulty"])
-    
-    max_diff = np.max(difficulties)
-    difficulties = difficulties * MAX_DIFF / max_diff
 
     a, b = np.polyfit(times, difficulties, 1)
 
-    plt.scatter(times, difficulties, color='blue')
-    plt.plot(times, a * times + b, color='steelblue')
+    if shouldPlot:
+        plt.scatter(times, difficulties, color='blue')
+        plt.plot(times, a * times + b, color='steelblue')
 
-    plt.show()
+        plt.show()
 
-    s = sum([(a * time + b - difficulty) ** 2 for time, difficulty in zip(times, difficulties)])
+        s = sum([(a * time + b - difficulty) ** 2 for time, difficulty in zip(times, difficulties)])
 
-    print (s)
-    return s
+        print (f"{s} error")
+
+    return a, b, s
+
+
+def evaluateNew(argv_begin):
+    a, b, _ = evaluateAll(False)
+
+    name = sys.argv[argv_begin]
+    difficulty = evaluate(name)
+
+    print(f"{(difficulty - b) / a} minutes")
+
+
+def plotBy(argv_begin):
+    type_of_plot = sys.argv[argv_begin]
+    df = filterByByTags(argv_begin + 1)
+
+    if (type_of_plot == "meanByTag"):
+        plotMeanTimeByTag(df)
+    elif (type_of_plot == "countByTag"):
+        plotCountByTag(df)
+    elif (type_of_plot == "timesByDate"):
+        plotTimesByDate(df)
 
 
 def makeProject():
