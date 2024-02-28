@@ -257,4 +257,5 @@ def makeProject():
 
 
 def test():
-    evaluateAll()
+    df = readDF(PUZZLE_DATA)
+    print(df)
